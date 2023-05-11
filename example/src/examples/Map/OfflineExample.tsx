@@ -6,9 +6,11 @@ import { Button, Dimensions, TextInput } from 'react-native';
 import Page from '../common/Page';
 import { BaseExampleProps } from '../common/BaseExamplePropTypes';
 
-const CENTER_COORD: [number, number] = [-73.970895, 40.723279];
+const CENTER_COORD: [number, number] = [-81.635, 29.914];
 const MAPBOX_VECTOR_TILE_SIZE = 512;
-const STYLE_URL = Mapbox.StyleURL.Satellite;
+
+// Public test style -- with custom styles/tilesets
+const STYLE_URL = "mapbox://styles/onwaterllc/clhcm7yjv00dl01rh4d0thgaz";
 
 const OfflineExample = (props: BaseExampleProps) => {
   const [packName, setPackName] = useState('pack-1');
@@ -87,7 +89,7 @@ const OfflineExample = (props: BaseExampleProps) => {
       />
       <Button
         title="Create Pack"
-        onPress={() => {
+        onPress={async () => {
           const { width, height } = Dimensions.get('window');
           const bounds: [number, number, number, number] = geoViewport.bounds(
             CENTER_COORD,
@@ -96,13 +98,17 @@ const OfflineExample = (props: BaseExampleProps) => {
             MAPBOX_VECTOR_TILE_SIZE,
           );
 
+          const b: [[number, number], [number, number]] = [
+            [bounds[0], bounds[1]],
+            [bounds[2], bounds[3]],
+          ]
+
+          console.log('BOUNDS: ', JSON.stringify(b, null, 2));
+
           const options = {
             name: packName,
             styleURL: STYLE_URL,
-            bounds: [
-              [bounds[0], bounds[1]],
-              [bounds[2], bounds[3]],
-            ] as [[number, number], [number, number]],
+            bounds: b,
             minZoom: 10,
             maxZoom: 20,
             metadata: {
@@ -120,7 +126,7 @@ const OfflineExample = (props: BaseExampleProps) => {
         }}
       />
       <MapView style={{ flex: 1 }} styleURL={STYLE_URL}>
-        <Camera zoomLevel={10} centerCoordinate={CENTER_COORD} />
+        <Camera zoomLevel={8} centerCoordinate={CENTER_COORD} />
       </MapView>
     </Page>
   );
